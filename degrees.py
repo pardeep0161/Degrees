@@ -12,6 +12,9 @@ people = {}
 # Maps movie_ids to a dictionary of: title, year, stars (a set of person_ids)
 movies = {}
 
+traversed_movies = set()
+traversed_peoples = set()
+
 
 def load_data(directory):
     """
@@ -92,9 +95,52 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
-    raise NotImplementedError
+    # path = []
+    # for current_elem in neighbors_for_person(source):
+    #     movie_id = current_elem[0]
+    #     person_id = current_elem[1]
+    #     if person_id == target:
+    #         path.append([movie_id, person_id])
+    #     elif movie_id not in movies and person_id not in people:
+    #         current_path = shortest_path(person_id, target)
+    #         if current_path is not None:
+    #             path.append(current_path)
+    # if len(path) == 0:
+    #     return None
+    # return path
+    start = Node(state=source, parent=None, action=None)
+    frontier = StackFrontier()
+    frontier.add(start)
 
+    explored = set()
+
+    while True:
+        if frontier.empty():
+            return None
+
+        node = frontier.remove()
+        if node.state == target:
+            # actions = []
+            # cells = []
+            # while node.parent is not None:
+            #     actions.append(node.action)
+            #     cells.append(node.state)
+            #     node = node.parent
+            # actions.reverse()
+            # cells.reverse()
+            # return actions, cells
+            solution = []
+            while node.parent is not None:
+                solution.append((node.action,node.state))
+                node = node.parent
+            solution.reverse()
+            return solution
+        explored.add(node.state)
+
+        for action, state in neighbors_for_person(node.state):
+            if not frontier.contains_state(state) and state not in explored:
+                child = Node(state=state, parent=node, action=action)
+                frontier.add(child)
 
 def person_id_for_name(name):
     """
